@@ -1,0 +1,14 @@
+{
+  "name": "h2hi-cypress",
+  "version": "1.0.0",
+  "description": "testing h2hi",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx cypress open"
+  },
+  "author": "Agustin Donnetta",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^9.2.1"
+  }
+}
