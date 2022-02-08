@@ -2,5 +2,6 @@
     "baseUrl": "https://dev.h2hi.quorumit.com/",
     "chromeWebSecurity": false,
     "viewportWidth": 1440,
-    "viewportHeight": 900
+    "viewportHeight": 900,
+    "experimentalSessionSupport" : true
 }
