@@ -1,3 +1,4 @@
+
 import MeetingSearch from '../support/meetingSearch'
 
 describe('meeting search tests', () => {
@@ -15,11 +16,13 @@ describe('meeting search tests', () => {
 
     const meetingSearch =new MeetingSearch
 
+    
+
     it('01 should search for a type 1 meeting', () => {
 
         // test
-        cy.get('#react-select-2-input').type('type').wait(1000).type('{enter}')
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getMeetingType().type('type').wait(1000).type('{enter}')
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(3)').should('contain' , 'Type 1')
@@ -29,7 +32,7 @@ describe('meeting search tests', () => {
 
         // test
         cy.get('input:first').type('Cypress')
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.get('body').should('contain' , 'Cypress')
@@ -38,7 +41,7 @@ describe('meeting search tests', () => {
     it('03 search for a meeting without data', () => {
         
         // test
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.on('window:alert', (str) => {
@@ -52,7 +55,7 @@ describe('meeting search tests', () => {
         // test
         meetingSearch.getStartDate().type('01022022')
         meetingSearch.getEndDate().type('01012021')
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.on('window:alert', (str) => {
@@ -64,21 +67,44 @@ describe('meeting search tests', () => {
 
         // test
         meetingSearch.getStartDate().type('55886987')
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.on('window:alert', (str) => {
             expect(str).to.contain(`meeting_date: Enter A Valid Date/Time.`)
         })
+        cy.url().should('contain' , '/meetings/search')
     });
 
-    it.only('06 search for a meeting using an invalid end date', () => {
+    it('06 search for a meeting using an invalid end date', () => {
+
+        // test
         meetingSearch.getEndDate().type('55886987')
-        cy.get('.css-1gp68l1 > :nth-child(2) > .MuiButton-root').click()
+        meetingSearch.getSubmitButton().click()
 
         // verification
         cy.on('window:alert', (str) => {
             expect(str).to.contain(`meeting_date: Enter A Valid Date/Time.`)
         })
+        cy.url().should('contain' , '/meetings/search')
     });
+
+    it('07 search for a "cypress" meeting and clicking on report ', () => {
+
+        // test
+        cy.get('input:first').type('Cypress')
+        meetingSearch.getSubmitButton().click()
+        meetingSearch.getReportButton().click()
+
+        // verification
+        cy.get('body').should('contain' , 'Suggested Codes')
+
+        // test
+        meetingSearch.getSuggestedCodesButton().click()
+        
+        // verification
+        cy.get('.css-prbzrh > .MuiBox-root').should('contain' , 'Codename')
+    });
+
+
 });

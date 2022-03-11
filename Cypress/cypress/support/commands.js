@@ -33,11 +33,12 @@ Cypress.Commands.add('loginTest', (username, password) => {
   cy.get('.MuiButton-root').click()
 })
 
-Cypress.Commands.add('termAdd', (term, code) => {
+Cypress.Commands.add('termAdd', (term, code, sentiment) => {
   const currentDatasetView=new CurrentDatasetView();
   currentDatasetView.getNewTerm().click()
   cy.get('input[name="term"]').type(term)
   cy.get('#react-select-4-input').type(code).wait(1000).type('{enter}')
+  cy.get('#react-select-5-input').type(sentiment).wait(1000).type('{enter}')
   cy.get('.css-rxfqj7 > .MuiButton-root').click()
   cy.wait(1000)
   cy.get('.css-1pg3x2d > .MuiButton-root').click()

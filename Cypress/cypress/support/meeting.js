@@ -8,6 +8,10 @@ class Meeting {
     getDate(){
         return cy.get(':nth-child(8) > .MuiFormControl-root > .MuiOutlinedInput-root > .MuiOutlinedInput-input')
     }
+    getSubmitButton(){
+        return cy.get('.css-d2oo9m > .MuiButton-root')
+    }
+    
     
     
 

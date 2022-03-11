@@ -1,6 +1,6 @@
 import CurrentDatasetView from '../support/currentDatasetView';
 
-describe('Dataset add term', () => {
+describe('Dataset add term tests', () => {
     beforeEach(() => {
 
         // clear LS
@@ -12,14 +12,11 @@ describe('Dataset add term', () => {
     })
     const currentDatasetView=new CurrentDatasetView();
 
-    it.only('01 should create, edit, search and delete a term', () => {
+    it('01 should create, edit, search and delete a term', () => {
 
         // term add
-        cy.termAdd('Hi there! I am Donnie', 'ppf01')
+        cy.termAdd('Hi there! I am Donnie', 'problem', 'positive')
         cy.get('.css-x1tbqu > .MuiButton-root').click()
-
-        // verification
-        cy.get('body').should('contain' , 'Hi there! I am Donnie')
         
         // search for the term
         cy.get('input[type="text"]:first').type('Hi there! I am Donnie').type('{enter}')
@@ -36,8 +33,9 @@ describe('Dataset add term', () => {
         cy.get('.css-x1tbqu > .MuiButton-root').click()
 
         //verification
-        cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(1)').should('contain' , 'edited term')
+        cy.get('body').should('contain' , 'edited term')
         
+
         // term delete
         currentDatasetView.getDeleteTermButton().click()
         cy.contains('Confirm').click()
@@ -49,19 +47,26 @@ describe('Dataset add term', () => {
     it('02 upload a blank term', () => {
 
         // test
-        cy.termAdd(' ', 'ppf01')
+        currentDatasetView.getNewTerm().click()
+        cy.get('input[name="term"]').type(' ')
+        currentDatasetView.getCodeInput().type('problem').wait(1000).type('{enter}')
+        currentDatasetView.getSentimentInput().type('positive').wait(1000).type('{enter}')
+        cy.get('.css-rxfqj7 > .MuiButton-root').click()
 
         // verification
         cy.on('window:alert', (str) => {
             expect(str).to.contain(`term: This Field May Not Be Blank`)
         })
+        cy.get('.css-16a4a5q').should('exist')
+        
     });
 
     it('03 upload an empty term', () => {
 
         // test
         currentDatasetView.getNewTerm().click()
-        cy.get('#react-select-4-input').type('PPF01').wait(1000).type('{enter}')
+        currentDatasetView.getCodeInput().type('problem').wait(1000).type('{enter}')
+        currentDatasetView.getSentimentInput().type('positive').wait(1000).type('{enter}')
         cy.get('.css-rxfqj7 > .MuiButton-root').click()
         cy.contains('Continue').click()
 
@@ -72,14 +77,17 @@ describe('Dataset add term', () => {
     it('04 upload a term with more than 250 char', () => {
 
         //test
-        cy.termAdd('is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, whis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standardssd',
-                    'ppf01'
-                    )
+        currentDatasetView.getNewTerm().click()
+        cy.get('input[name="term"]').type('is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, whis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standardssd')
+        currentDatasetView.getCodeInput().type('Problem').wait(1000).type('{enter}')
+        currentDatasetView.getSentimentInput().type('positive').wait(1000).type('{enter}')
+        cy.get('.css-rxfqj7 > .MuiButton-root').click()
 
         // verification           
         cy.on('window:alert', (str) => {
             expect(str).to.contain(`term: Ensure This Field Has No More Than 250 Characters`)
-            })
+        })
+        cy.get('.css-16a4a5q').should('exist')
 
     });
 
@@ -88,6 +96,7 @@ describe('Dataset add term', () => {
         // test
         currentDatasetView.getNewTerm().click()
         cy.get('input[name="term"]').type('lets play')
+        currentDatasetView.getSentimentInput().type('positive').wait(1000).type('{enter}')
         cy.get('.css-rxfqj7 > .MuiButton-root').click()
         cy.contains('Continue').click()
 
@@ -95,7 +104,7 @@ describe('Dataset add term', () => {
         cy.get('body').should('contain' , 'Code is a required field')
     });
 
-    it('06 upload an empty term without a code', () => {
+    it('06 upload an empty term without a code and sentiment', () => {
 
         // test
         currentDatasetView.getNewTerm().click()
@@ -105,6 +114,7 @@ describe('Dataset add term', () => {
         // verification
         cy.get('body').should('contain' , 'Code is a required field')
         cy.get('body').should('contain' , 'Term is a required field')
+        cy.get('body').should('contain' , 'Sentiment is a required field')
     });
 
     it('07 should edit a term without changing anything', () => {
@@ -120,27 +130,43 @@ describe('Dataset add term', () => {
         })
     });
 
-    it('08 should edit a term adding somne letters', () => {
+    it('08 upload a term without a sentiment', () => {
 
         // test
-        cy.get(':nth-child(1) > .css-q34dxg > :nth-child(1)').click()
-        cy.get('input[name="term"]').type('f')
-        cy.contains('Continue').click()
+        currentDatasetView.getNewTerm().click()
+        cy.get('input[name="term"]').type('Term without sentiment')
+        currentDatasetView.getCodeInput().type('problem').wait(1000).type('{enter}')
+        cy.get('.css-rxfqj7 > .MuiButton-root').click()
 
         // verification
-        cy.get('body').should('contain', 'A term has been edited on the dataset successfully')
-        cy.request('/datasets/current/dataset-rows').then((resp) => {
-            expect(resp.status).to.eq(200)
-        })
+        cy.get('body').should('contain' , 'Sentiment is a required field')
     });
     
-    it('09 should search for PPF01 codes', () => {
+    it('09 should search for Procedural suggestion codes', () => {
 
         // test
-        cy.get('#react-select-2-input').type('PPF01').type('{downarrow}{enter}').type('{enter}')
+        currentDatasetView.getCodeSearchInput().type('Procedural suggestion').type('{downarrow}').wait(1000).type('{enter}')
 
         // verification
-        cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(2)').should('contain', 'PPF01')
+        cy.get('body').should('contain', 'Procedural suggestion')
+    });
+
+    it('10 should sort by Code-ASC', () => {
+
+        // test
+        currentDatasetView.getSortByBox().click().wait(1000).type('{uparrow}{uparrow}{enter}}')
+
+        // verification
+        cy.get('body').should('contain', 'Action planning')
+    });
+
+    it('11 should sort by Code-DESC', () => {
+
+        // test
+        currentDatasetView.getSortByBox().click().wait(1000).type('{uparrow}{enter}}')
+
+        // verification
+        cy.get('body').should('contain', 'Task distribution')
     });
 
 });

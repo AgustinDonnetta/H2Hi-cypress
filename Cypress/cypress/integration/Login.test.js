@@ -4,27 +4,32 @@ describe('Login tests', () => {
 
     // clear LS
     cy.clearLocalStorage()
+
   })
-  
-      
-    it.only('01 should login into the app', () => {
+    
+    it('01 should login into the app', () => {
+
       // test
       cy.loginTest(Cypress.env('username'), Cypress.env('password'))
+
       // verification
       cy.get('body').should('contain' , 'Log out')  
     });
 
-    it('02 login with an invalid email', () => {
+    it.only('02 login with an invalid email', () => {
+
       // test
       cy.loginTest('asdn@gmail.com', Cypress.env('password'))
 
       // verification
       cy.on('window:alert', (str) => {
-        expect(str).to.equal(`Wrong password or username`)
+        expect(str).to.contain(`Wrong password or username`)
       })
+      cy.get('body').should('contain' , 'Email')
     });
 
     it('03 login not using an email format', () => {
+
       // test
       cy.loginTest('asdf', 'fewnfjewnfsovgws')
 
@@ -33,16 +38,20 @@ describe('Login tests', () => {
     });
 
     it('04 login using an incorrect password format', () => {
+
       // test
       cy.loginTest('asfaqf@gmail.com', '111554488')
 
       // verification
       cy.on('window:alert', (str) => {
-        expect(str).to.equal(`Wrong password or username`)
+        expect(str).to.contain(`Wrong password or username`)
       })
+      cy.get('body').should('contain' , 'Email')
+      cy.url().should('contain' , '')
     });
 
     it('05 login without using a password', () => {
+
       // test
       cy.loginTest('asfwqm@gmail.com', '{enter}')
 
@@ -52,6 +61,7 @@ describe('Login tests', () => {
     });
 
     it('06 login without using an email', () => {
+
       // test
       cy.loginTest('{enter}', 'adfsvgg23')
 
@@ -61,6 +71,7 @@ describe('Login tests', () => {
     });
 
     it('07 login without using username nor password ', () => {
+
       // test
       cy.loginTest(' ', ' ')
 
@@ -70,6 +81,7 @@ describe('Login tests', () => {
     });
 
     it('08 login using an incorrect password format', () => {
+
       // test
       cy.loginTest('asfaqf@gmail.com', 'asfddewa')
 
@@ -77,9 +89,11 @@ describe('Login tests', () => {
       cy.on('window:alert', (str) => {
         expect(str).to.equal(`Wrong password or username`)
       })
+      cy.get('body').should('contain' , 'Email')
     });
 
     it('09 login using an incorrect password format', () => {
+
       // test
       cy.loginTest('asfaqf@gmail.com', 'Pfsfddewa1')
 
@@ -87,9 +101,11 @@ describe('Login tests', () => {
       cy.on('window:alert', (str) => {
         expect(str).to.equal(`Wrong password or username`)
       })
+      cy.get('body').should('contain' , 'Email')
     });
 
     it('10 login using an incorrect password lenght', () => {
+
       // test
       cy.loginTest('asfaqf@gmail.com', 'asddw')
 
@@ -98,11 +114,13 @@ describe('Login tests', () => {
     });
 
     it('11 login using an incorrect password lenght', () => {
+
       // test
       cy.loginTest('asfaqf@gmail.com', 'adsaffqaadsaffqaadsaffqaadsaffqaadsaffqaadsaffqaadsaffqa')
 
       //verification
       cy.get('body').should('contain', 'Password must be at most 32 characters')
     });
+    
 });
 
